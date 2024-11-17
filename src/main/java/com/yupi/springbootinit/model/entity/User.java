@@ -13,74 +13,52 @@ import lombok.Data;
  * 用户
  *
  * @author dadadaguai
- * @from  
+ * @from
  */
 @TableName(value = "user")
 @Data
 public class User implements Serializable {
 
-    /**
-     * id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Long id;
+  /** id */
+  @TableId(type = IdType.ASSIGN_ID)
+  private Long id;
 
-    /**
-     * 用户账号
-     */
-    private String userAccount;
+  /** 用户账号 */
+  private String userAccount;
 
-    /**
-     * 用户密码
-     */
-    private String userPassword;
+  /** 用户密码 */
+  private String userPassword;
 
-    /**
-     * 开放平台id
-     */
-    private String unionId;
+  /** 开放平台id */
+  private String unionId;
 
-    /**
-     * 公众号openId
-     */
-    private String mpOpenId;
+  /** 公众号openId */
+  private String mpOpenId;
 
-    /**
-     * 用户昵称
-     */
-    private String userName;
+  /** 用户昵称 */
+  private String userName;
 
-    /**
-     * 用户头像
-     */
-    private String userAvatar;
+  /** 用户头像 */
+  private String userAvatar;
 
-    /**
-     * 用户简介
-     */
-    private String userProfile;
+  /** 用户简介 */
+  private String userProfile;
 
-    /**
-     * 用户角色：user/admin/ban
-     */
-    private String userRole;
+  /** 用户角色：user/admin/ban */
+  private String userRole;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
+  /** 编辑时间 */
+  private Date editTime;
 
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+  /** 创建时间 */
+  private Date createTime;
 
-    /**
-     * 是否删除
-     */
-    @TableLogic
-    private Integer isDelete;
+  /** 更新时间 */
+  private Date updateTime;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+  /** 是否删除 */
+  @TableLogic private Integer isDelete;
+
+  @TableField(exist = false)
+  private static final long serialVersionUID = 1L;
 }
