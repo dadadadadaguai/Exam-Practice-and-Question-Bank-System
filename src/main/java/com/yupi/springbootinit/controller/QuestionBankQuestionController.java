@@ -1,6 +1,8 @@
 package com.yupi.springbootinit.controller;
 
 import co.elastic.clients.elasticsearch.sql.QueryRequest;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.springbootinit.annotation.AuthCheck;
 import com.yupi.springbootinit.common.BaseResponse;
@@ -32,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  * @from
  */
 @RestController
-@RequestMapping("/questionBankQuestion ")
+@RequestMapping("/questionBankQuestion")
 @Slf4j
 public class QuestionBankQuestionController {
 
@@ -50,6 +52,7 @@ public class QuestionBankQuestionController {
    * @return
    */
   @PostMapping("/add")
+  @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
   public BaseResponse<Long> addQuestionBankQuestion(
       @RequestBody QuestionBankQuestionAddRequest questionBankQuestionAddRequest,
       HttpServletRequest request) {
@@ -221,5 +224,31 @@ public class QuestionBankQuestionController {
         questionBankQuestionService.getQuestionBankQuestionVOPage(
             questionBankQuestionPage, request));
   }
+
   // endregion
+  /**
+   * 移除题库题目关系
+   *
+   * @param questionBankQuestionAddRequest
+   * @param
+   * @return
+   */
+  @PostMapping("/remove")
+  @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+  public BaseResponse<Boolean> removeQuestionBankQuestion(
+      @RequestBody QuestionBankQuestionAddRequest questionBankQuestionAddRequest) {
+    ThrowUtils.throwIf(questionBankQuestionAddRequest == null, ErrorCode.PARAMS_ERROR);
+    Long bankId = questionBankQuestionAddRequest.getQuestionBankId();
+    Long questionId = questionBankQuestionAddRequest.getQuestionId();
+    ThrowUtils.throwIf(bankId == null || questionId == null, ErrorCode.PARAMS_ERROR);
+    LambdaQueryWrapper<QuestionBankQuestion> query =
+        new LambdaQueryWrapper<QuestionBankQuestion>()
+            .eq(QuestionBankQuestion::getQuestionBankId, bankId)
+            .eq(QuestionBankQuestion::getQuestionId, questionId);
+    boolean isRemove = questionBankQuestionService.remove(query);
+    if (!isRemove) {
+      return ResultUtils.error(ErrorCode.OPERATION_ERROR);
+    }
+    return ResultUtils.success(true);
+  }
 }

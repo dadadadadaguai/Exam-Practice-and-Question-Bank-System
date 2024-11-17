@@ -1,11 +1,10 @@
 package com.yupi.springbootinit.model.dto.question;
 
 import com.yupi.springbootinit.common.PageRequest;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 查询题目请求

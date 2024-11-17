@@ -10,11 +10,15 @@ import com.yupi.springbootinit.constant.CommonConstant;
 import com.yupi.springbootinit.exception.ThrowUtils;
 import com.yupi.springbootinit.mapper.QuestionBankQuestionMapper;
 import com.yupi.springbootinit.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.yupi.springbootinit.model.entity.Question;
+import com.yupi.springbootinit.model.entity.QuestionBank;
 import com.yupi.springbootinit.model.entity.QuestionBankQuestion;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.QuestionBankQuestionVO;
 import com.yupi.springbootinit.model.vo.UserVO;
 import com.yupi.springbootinit.service.QuestionBankQuestionService;
+import com.yupi.springbootinit.service.QuestionBankService;
+import com.yupi.springbootinit.service.QuestionService;
 import com.yupi.springbootinit.service.UserService;
 import com.yupi.springbootinit.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +47,7 @@ public class QuestionBankQuestionServiceImpl
     implements QuestionBankQuestionService {
 
   @Resource private UserService userService;
+  @Resource private QuestionBankService questionBankService;
 
   /**
    * 校验数据
@@ -53,6 +58,13 @@ public class QuestionBankQuestionServiceImpl
   @Override
   public void validQuestionBankQuestion(QuestionBankQuestion questionBankQuestion, boolean add) {
     ThrowUtils.throwIf(questionBankQuestion == null, ErrorCode.PARAMS_ERROR);
+    Long questionId = questionBankQuestion.getQuestionId();
+    Long questionBankId = questionBankQuestion.getQuestionBankId();
+    ThrowUtils.throwIf(questionId == null || questionBankId == null, ErrorCode.PARAMS_ERROR);
+    ThrowUtils.throwIf(
+        questionBankService.getById(questionBankId) == null, ErrorCode.NOT_FOUND_ERROR);
+    QuestionServiceImpl questionServiceImpl = new QuestionServiceImpl();
+    ThrowUtils.throwIf(questionServiceImpl.getById(questionId) == null, ErrorCode.NOT_FOUND_ERROR);
     // todo 从对象中取值
     // 创建数据时，参数不能为空
     // 修改数据时，有参数则校验

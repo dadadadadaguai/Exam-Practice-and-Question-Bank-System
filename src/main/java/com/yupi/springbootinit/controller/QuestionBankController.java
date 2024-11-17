@@ -9,15 +9,19 @@ import com.yupi.springbootinit.common.ResultUtils;
 import com.yupi.springbootinit.constant.UserConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.exception.ThrowUtils;
+import com.yupi.springbootinit.model.dto.question.QuestionQueryRequest;
 import com.yupi.springbootinit.model.dto.questionBank.QuestionBankAddRequest;
 import com.yupi.springbootinit.model.dto.questionBank.QuestionBankEditRequest;
 import com.yupi.springbootinit.model.dto.questionBank.QuestionBankQueryRequest;
 import com.yupi.springbootinit.model.dto.questionBank.QuestionBankUpdateRequest;
+import com.yupi.springbootinit.model.entity.Question;
 import com.yupi.springbootinit.model.entity.QuestionBank;
 import com.yupi.springbootinit.model.entity.User;
 import com.yupi.springbootinit.model.vo.QuestionBankVO;
 import com.yupi.springbootinit.service.QuestionBankService;
+import com.yupi.springbootinit.service.QuestionService;
 import com.yupi.springbootinit.service.UserService;
+import com.yupi.springbootinit.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +43,8 @@ public class QuestionBankController {
   @Resource private QuestionBankService questionBankService;
 
   @Resource private UserService userService;
+
+  @Resource private QuestionService questionService;
 
   // region 增删改查
 
@@ -128,17 +134,27 @@ public class QuestionBankController {
   /**
    * 根据 id 获取题库（封装类）
    *
-   * @param id
+   * @param
    * @return
    */
   @GetMapping("/get/vo")
-  public BaseResponse<QuestionBankVO> getQuestionBankVOById(long id, HttpServletRequest request) {
-    ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
+  public BaseResponse<QuestionBankVO> getQuestionBankVOById(
+      QuestionBankQueryRequest questionBankQueryRequest, HttpServletRequest request) {
+    Long id = questionBankQueryRequest.getId();
+    ThrowUtils.throwIf(DataUtils.isValidOfId(id), ErrorCode.PARAMS_ERROR);
     // 查询数据库
     QuestionBank questionBank = questionBankService.getById(id);
+    QuestionBankVO questionBankVO = questionBankService.getQuestionBankVO(questionBank, request);
     ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
+    Boolean isNeedQuestion = questionBankQueryRequest.getIsNeedQuestion();
+    if (Boolean.TRUE.equals(isNeedQuestion)) {
+      QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
+      questionQueryRequest.setQuestionBankId(id);
+      Page<Question> questionPage = questionService.ListQuestionByPage(questionQueryRequest);
+      questionBankVO.setQuestionPage(questionPage);
+    }
     // 获取封装类
-    return ResultUtils.success(questionBankService.getQuestionBankVO(questionBank, request));
+    return ResultUtils.success(questionBankVO);
   }
 
   /**

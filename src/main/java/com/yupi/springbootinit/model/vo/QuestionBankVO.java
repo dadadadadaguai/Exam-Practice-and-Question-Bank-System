@@ -1,5 +1,7 @@
 package com.yupi.springbootinit.model.vo;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yupi.springbootinit.model.entity.Question;
 import com.yupi.springbootinit.model.entity.QuestionBank;
 import java.io.Serializable;
 import java.util.Date;
@@ -38,6 +40,9 @@ public class QuestionBankVO implements Serializable {
 
   /** 创建用户信息 */
   private UserVO user;
+
+  /** 题目列表 */
+  private Page<Question> questionPage;
 
   /**
    * 封装类转对象
